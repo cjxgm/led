@@ -43,9 +43,8 @@ If you don't like led, you can uninstall it by:
 
 ## How to use led?
 Once you fire up led, you will see the led logo, then press any key
-to get into the main interface.
-
-In the main interface, you can use led commands to operate on the text.
+to get into the main interface. In the main interface, you can use
+led commands to operate on the text.
 ### Commands
 Commands are all one-character ones.
 '+' means finished.

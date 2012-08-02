@@ -9,10 +9,10 @@ clean:
 	rm -f *.o
 cleanall: clean
 	rm -f led
-install: all
-	# TODO
+install:
+	cp ./led /usr/local/bin/
 uninstall:
-	# TODO
+	rm -f /usr/local/bin/led
 
 debug: all
 	./led
