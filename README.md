@@ -10,17 +10,18 @@ commands are all one-character ones.
 	c	+	create a new file
 	l	+	load a file
 	s	+	save to a file
-	v		view all
+	v	+	view all
 	n	+	next line
 	p	+	previous line
 	f		find in the file
 	a	+	append to current line
 	d	+	delete current line
-	h		help
 	q	+	quit
+	h	+	head
+	t	+	tail
+	g		go to line
 
-	,		head
-	.		tail
+	?		help
 	`		repeat
 
 	<bs>+	<backspace>, remove the last character of current line

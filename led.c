@@ -77,6 +77,9 @@ static void cmd_prev();
 static void cmd_next();
 static void cmd_save();
 static void cmd_load();
+static void cmd_head();
+static void cmd_tail();
+static void cmd_view();
 static void cmd_backspace();
 static void cmd_newline();
 
@@ -136,6 +139,9 @@ int main()
 			case 'n':	cmd_next();			break;
 			case 's':	cmd_save();			break;
 			case 'l':	cmd_load();			break;
+			case 'h':	cmd_head();			break;
+			case 't':	cmd_tail();			break;
+			case 'v':	cmd_view();			break;
 			case 127:	cmd_backspace();	break;
 			case '\n':	cmd_newline();		break;
 			default:
@@ -333,12 +339,59 @@ static void cmd_load()
 
 	cmd_create();
 	while (fgets(tmp_string, MAX_TMP_STRING, fp) == tmp_string) {
+		if (used_line_cnt == MAX_LINE) {
+			status = "too many lines!";
+			status_type = STATUS_ERROR;
+			fclose(fp);
+			cmd_delete();
+			status = "file loading stopped half way";
+			return;
+		}
 		strip_tmp_string();
 		strcpy(text[used_line_cnt++], tmp_string);
 	}
 	fclose(fp);
 	cmd_delete();
 	status = "loaded";
+}
+
+static void cmd_head()
+{
+	current_line = 0;
+}
+
+static void cmd_tail()
+{
+	current_line = used_line_cnt - 1;
+}
+
+static void cmd_view()
+{
+	int backup = current_line;
+	int i;
+
+	current_line = -1;
+
+	for (i=0; i<used_line_cnt; i++) {
+		if (i % 20 == 0) {
+			term_clear();
+			printf(COLOR_STATUS_INFO "view %04d/%04d\n" COLOR_NORMAL,
+					i+1, used_line_cnt);
+		}
+		print_line(i);
+		if (i % 20 == 19) {
+			printf(COLOR_STATUS_INFO
+					"press any key to continue..." COLOR_NORMAL);
+			getchar();
+		}
+	}
+	if (used_line_cnt % 20) {
+		printf(COLOR_STATUS_INFO
+				"press any key to continue..." COLOR_NORMAL);
+		getchar();
+	}
+
+	current_line = backup;
 }
 
 static void cmd_backspace()
@@ -349,6 +402,11 @@ static void cmd_backspace()
 
 static void cmd_newline()
 {
+	if (used_line_cnt == MAX_LINE) {
+		status = "too many lines!";
+		status_type = STATUS_ERROR;
+		return;
+	}
 	used_line_cnt++;
 	current_line++;
 
