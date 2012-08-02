@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 // constants
 #define MAX_LINE					9999
 #define MAX_CH_PER_LINE				256
@@ -157,6 +158,7 @@ _exit_command_loop:
 	return 0;
 }
 
+
 /**********************************************************************
  *
  * terminal
@@ -165,18 +167,29 @@ _exit_command_loop:
 
 static void term_clear()
 {
+#ifdef __LANOS__
+	clear_screen();
+#else
 	printf("\e[H\e[J");
+#endif
 }
+
 
 static void term_cbne()
 {
+#ifndef __LANOS__
 	system("stty cbreak -echo");
+#endif
 }
+
 
 static void term_nocbne()
 {
+#ifndef __LANOS__
 	system("stty -cbreak echo");
+#endif
 }
+
 
 /**********************************************************************
  *
@@ -199,6 +212,7 @@ static void print_line(int lineno)
 	printf("%-74s\n" COLOR_NORMAL, text[lineno]);
 }
 
+
 static void print_status()
 {
 	switch (status_type) {
@@ -210,6 +224,7 @@ static void print_status()
 			break;
 	}
 }
+
 
 static void read_string()
 {
@@ -223,11 +238,13 @@ static void read_string()
 	term_cbne();
 }
 
+
 static int confirm(const char * msg)
 {
 	printf(COLOR_CONFIRM "%s (y/n) "COLOR_NORMAL, msg);
 	return getchar() == 'y';
 }
+
 
 static void strip_tmp_string()
 {
@@ -241,6 +258,7 @@ static void strip_tmp_string()
 	if (len>0 && tmp_string[len-1] == '\n')
 		tmp_string[len-1] = 0;
 }
+
 
 /**********************************************************************
  *
@@ -256,6 +274,7 @@ static void cmd_create()
 	used_line_cnt = 1;
 	current_line  = 0;
 }
+
 
 static void cmd_append()
 {
@@ -274,6 +293,7 @@ static void cmd_append()
 	strncat(text[current_line], tmp_string, MAX_CH_PER_LINE-1-len);
 }
 
+
 static void cmd_delete()
 {
 	text[current_line][0] = 0;
@@ -288,17 +308,20 @@ static void cmd_delete()
 		current_line--;
 }
 
+
 static void cmd_prev()
 {
 	if (--current_line < 0)
 		current_line = 0;
 }
 
+
 static void cmd_next()
 {
 	if (++current_line == used_line_cnt)
 		current_line--;
 }
+
 
 static void cmd_save()
 {
@@ -321,6 +344,7 @@ static void cmd_save()
 	fclose(fp);
 	status = "saved";
 }
+
 
 static void cmd_load()
 {
@@ -355,15 +379,18 @@ static void cmd_load()
 	status = "loaded";
 }
 
+
 static void cmd_head()
 {
 	current_line = 0;
 }
 
+
 static void cmd_tail()
 {
 	current_line = used_line_cnt - 1;
 }
+
 
 static void cmd_view()
 {
@@ -394,11 +421,13 @@ static void cmd_view()
 	current_line = backup;
 }
 
+
 static void cmd_backspace()
 {
 	int len = strlen(text[current_line]);
 	if (len) text[current_line][len-1] = 0;
 }
+
 
 static void cmd_newline()
 {
@@ -420,6 +449,7 @@ static void cmd_newline()
 		strcpy(text[i], text[i-1]);
 	text[current_line][0] = 0;
 }
+
 
 // vim: ts=4 sw=4 sts=0 noet fenc=utf-8
 
