@@ -41,7 +41,7 @@
 #define COLOR_CURRENT_LINE_TO_LONG	"\e[m"
 #define COLOR_STATUS_INFO			"\e[1m"
 #define COLOR_STATUS_ERROR			"\e[1;31m"
-#define COLOR_CONFIRM				"\e[1m"
+#define COLOR_CONFIRM				"\e[1;31m"
 /* ui */
 #define MAX_TMP_STRING				(MAX_CH_PER_LINE-1)
 #define STATUS_INFO					0
@@ -68,12 +68,15 @@ static void print_line(int lineno);
 static void print_status();
 static void read_string();
 static int  confirm(const char * msg);
+static void strip_tmp_string();
 /* commands */
 static void cmd_create();
 static void cmd_append();
 static void cmd_delete();
 static void cmd_prev();
 static void cmd_next();
+static void cmd_save();
+static void cmd_load();
 static void cmd_backspace();
 static void cmd_newline();
 
@@ -131,7 +134,9 @@ int main()
 			case 'd':	cmd_delete();		break;
 			case 'p':	cmd_prev();			break;
 			case 'n':	cmd_next();			break;
-			case '\b':	cmd_backspace();	break;
+			case 's':	cmd_save();			break;
+			case 'l':	cmd_load();			break;
+			case 127:	cmd_backspace();	break;
 			case '\n':	cmd_newline();		break;
 			default:
 				status = "unknown command";
@@ -208,9 +213,7 @@ static void read_string()
 		status = "unable to read from stdin";
 		status_type = STATUS_ERROR;
 	}
-	int last = strlen(tmp_string)-1;
-	if (last>=0 && tmp_string[last] == '\n')
-		tmp_string[last] = 0;
+	strip_tmp_string();
 	term_cbne();
 }
 
@@ -218,6 +221,19 @@ static int confirm(const char * msg)
 {
 	printf(COLOR_CONFIRM "%s (y/n) "COLOR_NORMAL, msg);
 	return getchar() == 'y';
+}
+
+static void strip_tmp_string()
+{
+	int i;
+	int len = strlen(tmp_string);
+	// strip tab
+	for (i=0; i<len; i++)
+		if (tmp_string[i] == '\t')
+			tmp_string[i] = ' ';
+	// strip the last '\n'
+	if (len>0 && tmp_string[len-1] == '\n')
+		tmp_string[len-1] = 0;
 }
 
 /**********************************************************************
@@ -276,6 +292,53 @@ static void cmd_next()
 {
 	if (++current_line == used_line_cnt)
 		current_line--;
+}
+
+static void cmd_save()
+{
+	read_string();
+	if (!strlen(tmp_string)) {
+		status = "canceled";
+		return;
+	}
+
+	FILE * fp = fopen(tmp_string, "w");
+	if (!fp) {
+		status = "file open failed!";
+		status_type = STATUS_ERROR;
+		return;
+	}
+
+	int i;
+	for (i=0; i<used_line_cnt; i++)
+		fprintf(fp, "%s\n", text[i]);
+	fclose(fp);
+	status = "saved";
+}
+
+static void cmd_load()
+{
+	read_string();
+	if (!strlen(tmp_string)) {
+		status = "canceled";
+		return;
+	}
+
+	FILE * fp = fopen(tmp_string, "r");
+	if (!fp) {
+		status = "file open failed!";
+		status_type = STATUS_ERROR;
+		return;
+	}
+
+	cmd_create();
+	while (fgets(tmp_string, MAX_TMP_STRING, fp) == tmp_string) {
+		strip_tmp_string();
+		strcpy(text[used_line_cnt++], tmp_string);
+	}
+	fclose(fp);
+	cmd_delete();
+	status = "loaded";
 }
 
 static void cmd_backspace()
