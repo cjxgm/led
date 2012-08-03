@@ -56,25 +56,28 @@ Commands are all one-character ones.
 	c	+	create a new file
 	l	+	load a file
 	s	+	save to a file
-	v	+	view all (20 lines at a time)
-	V		view all (a few lines at a time)
-	n	+	next line
-	N		next a few lines
-	p	+	previous line
-	P		previous line
 	a	+	append to current line
+	i	+	insert to current line
 	d	+	delete current line
-	D		delete current line and the following few lines
+	D	+	delete current line and the following few lines
+	n	+	next line
+	N	+	next a few lines
+	p	+	previous line
+	P	+	previous line
+	f		find forward in the file
+	F		find backward in the file
+	v	+	view all (20 lines at a time)
+	V	+	view all (a few lines at a time)
 	q	+	quit
 	h	+	head
 	t	+	tail
 
-	:		go to line
-	/		find in the file
+	>	+	go to line
 	?		help
 
 	<bs>+	<backspace>, remove the last character of current line
 	<cr>+	<return>, new line next to current line.
+	<sp>	<space>, find next
 
 ### About the prompt
 If you tried the command 'a', then you will see the prompt ':'.
