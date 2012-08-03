@@ -40,7 +40,7 @@
 #define COLOR_CURRENT_LINE			"\e[1;37;44m"
 #define COLOR_CURRENT_LINENO		"\e[1;33;40m"
 #define COLOR_CURRENT_LINE_TO_LONG	"\e[m"
-#define COLOR_STATUS_INFO			"\e[1m"
+#define COLOR_STATUS_INFO			"\e[1;37;40m"
 #define COLOR_STATUS_ERROR			"\e[1;31m"
 #define COLOR_CONFIRM				"\e[1;31m"
 #define COLOR_RULER					"\e[1;32m"
@@ -93,6 +93,7 @@ static void cmd_backspace();
 static void cmd_newline();
 static void cmd_find(int direction);
 static void cmd_findnext();
+static void cmd_help();
 
 
 /**********************************************************************
@@ -162,6 +163,7 @@ int main()
 			case 'f':	cmd_find(+1);						break;
 			case 'F':	cmd_find(-1);						break;
 			case ' ':	cmd_findnext();						break;
+			case '?':	cmd_help();							break;
 			case 127:	cmd_backspace();					break;
 			case '\n':	cmd_newline();						break;
 			default:
@@ -629,6 +631,42 @@ static void cmd_findnext()
 	// not found
 	status = "nothing found";
 	status_type = STATUS_ERROR;
+}
+
+
+static void cmd_help()
+{
+	term_clear();
+	printf(
+		COLOR_LOGO
+		"                                                            \n"
+		"           .   .--   .                                      \n"
+		"           |   |-- .-|  a lightweight line editor           \n"
+		"           '-- '-- '-'                                      \n"
+		"                                                            \n"
+		COLOR_STATUS_INFO
+		"                         H E L P                            \n"
+		COLOR_LINENO
+		"   c create   a append    n next line    f find forward     \n"
+		"   l load     i insert    N next line*   F find backward    \n"
+		"   s save     d delete    p prev line    v view all         \n"
+		"   q quit     D delete*   P prev line*   V view all*        \n"
+		"   h head     t tail      > go to line   ? help (this)      \n"
+		"   <backspace> remove last character of current line.       \n"
+		"   <return>    new line next to current line.               \n"
+		"   <space>     find next.                                   \n"
+		COLOR_STATUS_ERROR
+		"         note: '*' means it will ask you a count.           \n"
+		"                                                            \n"
+		COLOR_STATUS_INFO
+		"                 C O N T R I B U T E R S                    \n"
+		COLOR_LINENO
+		"             eXerigumo Clanjor <cjxgm@126.com>              \n"
+		"                                                            \n"
+		COLOR_NORMAL
+		"                press any key to go back..."
+	);
+	getchar();
 }
 
 

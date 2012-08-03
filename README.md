@@ -64,8 +64,8 @@ Commands are all one-character ones.
 	N	+	next a few lines
 	p	+	previous line
 	P	+	previous line
-	f		find forward in the file
-	F		find backward in the file
+	f	+	find forward in the file
+	F	+	find backward in the file
 	v	+	view all (20 lines at a time)
 	V	+	view all (a few lines at a time)
 	q	+	quit
@@ -73,11 +73,11 @@ Commands are all one-character ones.
 	t	+	tail
 
 	>	+	go to line
-	?		help
+	?	+	help
 
 	<bs>+	<backspace>, remove the last character of current line
 	<cr>+	<return>, new line next to current line.
-	<sp>	<space>, find next
+	<sp>+	<space>, find next
 
 ### About the prompt
 If you tried the command 'a', then you will see the prompt ':'.
